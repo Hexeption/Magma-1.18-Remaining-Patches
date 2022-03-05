@@ -654,28 +654,6 @@
                      try {
                          arraylist = Lists.newArrayList(NativeModuleLister.listModules());
 @@ -1824,6 +2121,22 @@
- 
-     }
- 
-+    // CraftBukkit start
-+    @Override
-+    public boolean isSameThread() {
-+        return super.isSameThread() || this.isStopped(); // CraftBukkit - MC-142590
-+    }
-+
-+    public boolean isDebugging() {
-+        return false;
-+    }
-+
-+    @Deprecated
-+    public static MinecraftServer getServer() {
-+        return (Bukkit.getServer() instanceof CraftServer) ? ((CraftServer) Bukkit.getServer()).getServer() : null;
-+    }
-+    // CraftBukkit end
-+
-     private void startMetricsRecordingTick() {
-         if (this.willStartRecordingMetrics) {
-             this.metricsRecorder = ActiveMetricsRecorder.createStarted(new ServerMetricsSamplersProvider(SystemUtils.timeSource, this.isDedicatedServer()), SystemUtils.timeSource, SystemUtils.ioPool(), new MetricsPersister("server"), this.onMetricsRecordingStopped, (path) -> {
 @@ -1935,8 +2248,10 @@
          }
      }
