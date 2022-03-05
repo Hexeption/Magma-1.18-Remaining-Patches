@@ -1,54 +1,7 @@
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -163,6 +163,26 @@
- import org.apache.commons.lang3.Validate;
- import org.slf4j.Logger;
- 
-+// CraftBukkit start
-+import com.mojang.serialization.DynamicOps;
-+import com.mojang.serialization.Lifecycle;
-+import jline.console.ConsoleReader;
-+import joptsimple.OptionSet;
-+import net.minecraft.nbt.DynamicOpsNBT;
-+import net.minecraft.nbt.NBTBase;
-+import net.minecraft.server.dedicated.DedicatedServer;
-+import net.minecraft.server.dedicated.DedicatedServerProperties;
-+import net.minecraft.util.datafix.DataConverterRegistry;
-+import net.minecraft.world.level.biome.WorldChunkManager;
-+import net.minecraft.world.level.levelgen.ChunkGeneratorAbstract;
-+import net.minecraft.world.level.storage.WorldDataServer;
-+import org.bukkit.Bukkit;
-+import org.bukkit.craftbukkit.CraftServer;
-+import org.bukkit.craftbukkit.Main;
-+import org.bukkit.craftbukkit.generator.CustomWorldChunkManager;
-+import org.bukkit.event.server.ServerLoadEvent;
-+// CraftBukkit end
-+
- public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTask> implements ICommandListener, AutoCloseable {
- 
-     public static final Logger LOGGER = LogUtils.getLogger();
 @@ -255,6 +275,21 @@
-     protected SaveData worldData;
-     private volatile boolean isSaving;
- 
-+    // CraftBukkit start
-+    public final DataPackConfiguration datapackconfiguration;
-+    public final DynamicOps<NBTBase> registryreadops;
-+    public org.bukkit.craftbukkit.CraftServer server;
-+    public OptionSet options;
-+    public org.bukkit.command.ConsoleCommandSender console;
-+    public org.bukkit.command.RemoteConsoleCommandSender remoteConsole;
-+    public ConsoleReader reader;
-+    public static int currentTick = (int) (System.currentTimeMillis() / 50);
-+    public java.util.Queue<Runnable> processQueue = new java.util.concurrent.ConcurrentLinkedQueue<Runnable>();
-+    public int autosavePeriod;
-+    public CommandDispatcher vanillaCommandDispatcher;
-+    private boolean forceTicks;
-+    // CraftBukkit end
-+
-     public static <S extends MinecraftServer> S spin(Function<Thread, S> function) {
-         AtomicReference<S> atomicreference = new AtomicReference();
-         Thread thread = new Thread(() -> {
 @@ -268,14 +303,14 @@
              thread.setPriority(8);
          }

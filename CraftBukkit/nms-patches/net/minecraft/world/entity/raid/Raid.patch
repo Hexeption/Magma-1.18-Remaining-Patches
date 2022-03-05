@@ -123,15 +123,4 @@
          }
  
 @@ -845,6 +868,12 @@
-         this.heroesOfTheVillage.add(entity.getUUID());
-     }
- 
-+    // CraftBukkit start - a method to get all raiders
-+    public java.util.Collection<EntityRaider> getRaiders() {
-+        return this.groupRaiderMap.values().stream().flatMap(Set::stream).collect(java.util.stream.Collectors.toSet());
-+    }
-+    // CraftBukkit end
-+
-     private static enum Status {
- 
-         ONGOING, VICTORY, LOSS, STOPPED;
+
