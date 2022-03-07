@@ -171,27 +171,6 @@
  
      public static boolean isFuel(ItemStack itemstack) {
 @@ -485,14 +583,20 @@
-     @Override
-     public void awardUsedRecipes(EntityHuman entityhuman) {}
- 
--    public void awardUsedRecipesAndPopExperience(EntityPlayer entityplayer) {
--        List<IRecipe<?>> list = this.getRecipesToAwardAndPopExperience(entityplayer.getLevel(), entityplayer.position());
-+    public void awardUsedRecipesAndPopExperience(EntityPlayer entityplayer, ItemStack itemstack, int amount) { // CraftBukkit
-+        List<IRecipe<?>> list = this.getRecipesToAwardAndPopExperience(entityplayer.getLevel(), entityplayer.position(), this.worldPosition, entityplayer, itemstack, amount); // CraftBukkit
- 
-         entityplayer.awardRecipes(list);
-         this.recipesUsed.clear();
-     }
- 
-     public List<IRecipe<?>> getRecipesToAwardAndPopExperience(WorldServer worldserver, Vec3D vec3d) {
-+        // CraftBukkit start
-+        return this.getRecipesToAwardAndPopExperience(worldserver, vec3d, this.worldPosition, null, null, 0);
-+    }
-+
-+    public List<IRecipe<?>> getRecipesToAwardAndPopExperience(WorldServer worldserver, Vec3D vec3d, BlockPosition blockposition, EntityPlayer entityplayer, ItemStack itemstack, int amount) {
-+        // CraftBukkit end
-         List<IRecipe<?>> list = Lists.newArrayList();
-         ObjectIterator objectiterator = this.recipesUsed.object2IntEntrySet().iterator();
  
 @@ -501,14 +605,14 @@
  

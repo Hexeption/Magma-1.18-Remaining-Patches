@@ -62,7 +62,7 @@
      public void stopOpen(EntityHuman entityhuman) {
          if (!entityhuman.isSpectator()) {
              --this.openCount;
-+            if (opened) return; // CraftBukkit - only animate if the ShulkerBox hasn't been forced open already by an API call.
++            if () return; // CraftBukkit - only animate if the ShulkerBox hasn't been forced open already by an API call.
              this.level.blockEvent(this.worldPosition, this.getBlockState().getBlock(), 1, this.openCount);
              if (this.openCount <= 0) {
                  this.level.gameEvent(entityhuman, GameEvent.CONTAINER_CLOSE, this.worldPosition);

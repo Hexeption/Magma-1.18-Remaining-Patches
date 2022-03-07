@@ -1,65 +1,8 @@
 --- a/net/minecraft/world/entity/player/EntityHuman.java
 +++ b/net/minecraft/world/entity/player/EntityHuman.java
 @@ -112,6 +112,19 @@
- import net.minecraft.world.scores.ScoreboardTeam;
- import net.minecraft.world.scores.ScoreboardTeamBase;
- 
-+// CraftBukkit start
-+import org.bukkit.craftbukkit.entity.CraftHumanEntity;
-+import org.bukkit.craftbukkit.event.CraftEventFactory;
-+import org.bukkit.craftbukkit.util.CraftVector;
-+import org.bukkit.entity.Item;
-+import org.bukkit.entity.Player;
-+import org.bukkit.event.entity.CreatureSpawnEvent;
-+import org.bukkit.event.entity.EntityCombustByEntityEvent;
-+import org.bukkit.event.entity.EntityExhaustionEvent;
-+import org.bukkit.event.player.PlayerDropItemEvent;
-+import org.bukkit.event.player.PlayerVelocityEvent;
-+// CraftBukkit end
-+
- public abstract class EntityHuman extends EntityLiving {
- 
-     public static final String UUID_PREFIX_OFFLINE_PLAYER = "OfflinePlayer:";
 @@ -125,7 +138,8 @@
-     public static final float SWIMMING_BB_HEIGHT = 0.6F;
-     public static final float DEFAULT_EYE_HEIGHT = 1.62F;
-     public static final EntitySize STANDING_DIMENSIONS = EntitySize.scalable(0.6F, 1.8F);
--    private static final Map<EntityPose, EntitySize> POSES = ImmutableMap.builder().put(EntityPose.STANDING, EntityHuman.STANDING_DIMENSIONS).put(EntityPose.SLEEPING, EntityHuman.SLEEPING_DIMENSIONS).put(EntityPose.FALL_FLYING, EntitySize.scalable(0.6F, 0.6F)).put(EntityPose.SWIMMING, EntitySize.scalable(0.6F, 0.6F)).put(EntityPose.SPIN_ATTACK, EntitySize.scalable(0.6F, 0.6F)).put(EntityPose.CROUCHING, EntitySize.scalable(0.6F, 1.5F)).put(EntityPose.DYING, EntitySize.fixed(0.2F, 0.2F)).build();
-+    // CraftBukkit - decompile error
-+    private static final Map<EntityPose, EntitySize> POSES = ImmutableMap.<EntityPose, EntitySize>builder().put(EntityPose.STANDING, EntityHuman.STANDING_DIMENSIONS).put(EntityPose.SLEEPING, EntityHuman.SLEEPING_DIMENSIONS).put(EntityPose.FALL_FLYING, EntitySize.scalable(0.6F, 0.6F)).put(EntityPose.SWIMMING, EntitySize.scalable(0.6F, 0.6F)).put(EntityPose.SPIN_ATTACK, EntitySize.scalable(0.6F, 0.6F)).put(EntityPose.CROUCHING, EntitySize.scalable(0.6F, 1.5F)).put(EntityPose.DYING, EntitySize.fixed(0.2F, 0.2F)).build();
-     private static final int FLY_ACHIEVEMENT_SPEED = 25;
-     private static final DataWatcherObject<Float> DATA_PLAYER_ABSORPTION_ID = DataWatcher.defineId(EntityHuman.class, DataWatcherRegistry.FLOAT);
-     private static final DataWatcherObject<Integer> DATA_SCORE_ID = DataWatcher.defineId(EntityHuman.class, DataWatcherRegistry.INT);
-@@ -135,10 +149,10 @@
-     protected static final DataWatcherObject<NBTTagCompound> DATA_SHOULDER_RIGHT = DataWatcher.defineId(EntityHuman.class, DataWatcherRegistry.COMPOUND_TAG);
-     private long timeEntitySatOnShoulder;
-     private final PlayerInventory inventory = new PlayerInventory(this);
--    protected InventoryEnderChest enderChestInventory = new InventoryEnderChest();
-+    protected InventoryEnderChest enderChestInventory = new InventoryEnderChest(this); // CraftBukkit - add "this" to constructor
-     public final ContainerPlayer inventoryMenu;
-     public Container containerMenu;
--    protected FoodMetaData foodData = new FoodMetaData();
-+    protected FoodMetaData foodData = new FoodMetaData(this); // CraftBukkit - add "this" to constructor
-     protected int jumpTriggerTime;
-     public float oBob;
-     public float bob;
 @@ -165,6 +179,16 @@
-     @Nullable
-     public EntityFishingHook fishing;
- 
-+    // CraftBukkit start
-+    public boolean fauxSleeping;
-+    public int oldLevel = -1;
-+
-+    @Override
-+    public CraftHumanEntity getBukkitEntity() {
-+        return (CraftHumanEntity) super.getBukkitEntity();
-+    }
-+    // CraftBukkit end
-+
-     public EntityHuman(World world, BlockPosition blockposition, float f, GameProfile gameprofile) {
-         super(EntityTypes.PLAYER, world);
-         this.lastItemInMainHand = ItemStack.EMPTY;
 @@ -303,7 +327,7 @@
          ItemStack itemstack = this.getItemBySlot(EnumItemSlot.HEAD);
  

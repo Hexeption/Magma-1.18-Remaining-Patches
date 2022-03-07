@@ -1,60 +1,7 @@
 --- a/net/minecraft/server/level/EntityPlayer.java
 +++ b/net/minecraft/server/level/EntityPlayer.java
 @@ -140,6 +140,33 @@
- import net.minecraft.world.scores.criteria.IScoreboardCriteria;
- import org.slf4j.Logger;
- 
-+// CraftBukkit start
-+import net.minecraft.nbt.NBTBase;
-+import net.minecraft.world.damagesource.CombatTracker;
-+import net.minecraft.world.food.FoodMetaData;
-+import net.minecraft.world.item.enchantment.EnchantmentManager;
-+import net.minecraft.world.level.block.BlockChest;
-+import net.minecraft.world.level.dimension.WorldDimension;
-+import net.minecraft.world.scores.Scoreboard;
-+import org.bukkit.Bukkit;
-+import org.bukkit.Location;
-+import org.bukkit.WeatherType;
-+import org.bukkit.craftbukkit.CraftWorld;
-+import org.bukkit.craftbukkit.entity.CraftPlayer;
-+import org.bukkit.craftbukkit.event.CraftEventFactory;
-+import org.bukkit.craftbukkit.event.CraftPortalEvent;
-+import org.bukkit.craftbukkit.inventory.CraftItemStack;
-+import org.bukkit.craftbukkit.util.CraftDimensionUtil;
-+import org.bukkit.event.player.PlayerBedLeaveEvent;
-+import org.bukkit.event.player.PlayerChangedMainHandEvent;
-+import org.bukkit.event.player.PlayerChangedWorldEvent;
-+import org.bukkit.event.player.PlayerLocaleChangeEvent;
-+import org.bukkit.event.player.PlayerPortalEvent;
-+import org.bukkit.event.player.PlayerTeleportEvent;
-+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
-+import org.bukkit.inventory.MainHand;
-+// CraftBukkit end
-+
- public class EntityPlayer extends EntityHuman {
- 
-     private static final Logger LOGGER = LogUtils.getLogger();
 @@ -194,6 +221,20 @@
-     public int latency;
-     public boolean wonGame;
- 
-+    // CraftBukkit start
-+    public String displayName;
-+    public IChatBaseComponent listName;
-+    public org.bukkit.Location compassTarget;
-+    public int newExp = 0;
-+    public int newLevel = 0;
-+    public int newTotalExp = 0;
-+    public boolean keepLevel = false;
-+    public double maxHealthCache;
-+    public boolean joining = true;
-+    public boolean sentListPacket = false;
-+    public Integer clientViewDistance;
-+    // CraftBukkit end
-+
-     public EntityPlayer(MinecraftServer minecraftserver, WorldServer worldserver, GameProfile gameprofile) {
-         super(worldserver, worldserver.getSharedSpawnPos(), worldserver.getSharedSpawnAngle(), gameprofile);
-         this.chatVisibility = EnumChatVisibility.FULL;
 @@ -256,12 +297,56 @@
          this.advancements = minecraftserver.getPlayerList().getPlayerAdvancements(this);
          this.maxUpStep = 1.0F;
@@ -663,90 +610,10 @@
  
      @Override
 @@ -1039,13 +1354,35 @@
-         if (itileinventory == null) {
-             return OptionalInt.empty();
-         } else {
-+            // CraftBukkit start - SPIGOT-6552: Handle inventory closing in CraftEventFactory#callInventoryOpenEvent(...)
-+            /*
-             if (this.containerMenu != this.inventoryMenu) {
-                 this.closeContainer();
-             }
-+            */
-+            // CraftBukkit end
- 
-             this.nextContainerCounter();
-             Container container = itileinventory.createMenu(this.containerCounter, this.getInventory(), this);
- 
-+            // CraftBukkit start - Inventory open hook
-+            if (container != null) {
-+                container.setTitle(itileinventory.getDisplayName());
-+
-+                boolean cancelled = false;
-+                container = CraftEventFactory.callInventoryOpenEvent(this, container, cancelled);
-+                if (container == null && !cancelled) { // Let pre-cancelled events fall through
-+                    // SPIGOT-5263 - close chest if cancelled
-+                    if (itileinventory instanceof IInventory) {
-+                        ((IInventory) itileinventory).stopOpen(this);
-+                    } else if (itileinventory instanceof BlockChest.DoubleInventory) {
-+                        // SPIGOT-5355 - double chests too :(
-+                        ((BlockChest.DoubleInventory) itileinventory).inventorylargechest.stopOpen(this);
-+                    }
-+                    return OptionalInt.empty();
-+                }
-+            }
-+            // CraftBukkit end
-             if (container == null) {
-                 if (this.isSpectator()) {
-                     this.displayClientMessage((new ChatMessage("container.spectatorCantOpen")).withStyle(EnumChatFormat.RED), true);
-@@ -1053,9 +1390,11 @@
- 
-                 return OptionalInt.empty();
-             } else {
--                this.connection.send(new PacketPlayOutOpenWindow(container.containerId, container.getType(), itileinventory.getDisplayName()));
--                this.initMenu(container);
-+                // CraftBukkit start
-                 this.containerMenu = container;
-+                this.connection.send(new PacketPlayOutOpenWindow(container.containerId, container.getType(), container.getTitle()));
-+                // CraftBukkit end
-+                this.initMenu(container);
-                 return OptionalInt.of(this.containerCounter);
-             }
-         }
 @@ -1068,13 +1407,24 @@
- 
-     @Override
-     public void openHorseInventory(EntityHorseAbstract entityhorseabstract, IInventory iinventory) {
-+        // CraftBukkit start - Inventory open hook
-+        this.nextContainerCounter();
-+        Container container = new ContainerHorse(this.containerCounter, this.getInventory(), iinventory, entityhorseabstract);
-+        container.setTitle(entityhorseabstract.getDisplayName());
-+        container = CraftEventFactory.callInventoryOpenEvent(this, container);
-+
-+        if (container == null) {
-+            iinventory.stopOpen(this);
-+            return;
-+        }
-+        // CraftBukkit end
-         if (this.containerMenu != this.inventoryMenu) {
-             this.closeContainer();
-         }
- 
--        this.nextContainerCounter();
-+        // this.nextContainerCounter(); // CraftBukkit - moved up
-         this.connection.send(new PacketPlayOutOpenWindowHorse(this.containerCounter, iinventory.getContainerSize(), entityhorseabstract.getId()));
--        this.containerMenu = new ContainerHorse(this.containerCounter, this.getInventory(), iinventory, entityhorseabstract);
-+        this.containerMenu = container; // CraftBukkit
-         this.initMenu(this.containerMenu);
-     }
  
 @@ -1097,6 +1447,7 @@
  
-     @Override
-     public void closeContainer() {
-+        CraftEventFactory.handleInventoryCloseEvent(this); // CraftBukkit
-         this.connection.send(new PacketPlayOutCloseWindow(this.containerMenu.containerId));
-         this.doCloseContainer();
-     }
 @@ -1126,7 +1477,7 @@
      @Override
      public void awardStat(Statistic<?> statistic, int i) {
