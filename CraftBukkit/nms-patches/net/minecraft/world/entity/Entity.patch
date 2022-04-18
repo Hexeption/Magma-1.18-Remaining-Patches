@@ -85,56 +85,8 @@
          }
  
          this.checkOutOfWorld();
-@@ -518,15 +638,48 @@
- 
-     public void lavaHurt() {
-         if (!this.fireImmune()) {
--            this.setSecondsOnFire(15);
-+            // CraftBukkit start - Fallen in lava TODO: this event spams!
-+            if (this instanceof EntityLiving && remainingFireTicks <= 0) {
-+                // not on fire yet
-+                org.bukkit.block.Block damager = (lastLavaContact == null) ? null : org.bukkit.craftbukkit.block.CraftBlock.at(level, lastLavaContact);
-+                org.bukkit.entity.Entity damagee = this.getBukkitEntity();
-+                EntityCombustEvent combustEvent = new org.bukkit.event.entity.EntityCombustByBlockEvent(damager, damagee, 15);
-+                this.level.getCraftServer().getPluginManager().callEvent(combustEvent);
-+
-+                if (!combustEvent.isCancelled()) {
-+                    this.setSecondsOnFire(combustEvent.getDuration(), false);
-+                }
-+            } else {
-+                // This will be called every single tick the entity is in lava, so don't throw an event
-+                this.setSecondsOnFire(15, false);
-+            }
-+            CraftEventFactory.blockDamage = (lastLavaContact) == null ? null : org.bukkit.craftbukkit.block.CraftBlock.at(level, lastLavaContact);
-             if (this.hurt(DamageSource.LAVA, 4.0F)) {
-                 this.playSound(SoundEffects.GENERIC_BURN, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
-             }
-+            CraftEventFactory.blockDamage = null;
-+            // CraftBukkit end - we also don't throw an event unless the object in lava is living, to save on some event calls
- 
-         }
-     }
- 
-     public void setSecondsOnFire(int i) {
-+        // CraftBukkit start
-+        this.setSecondsOnFire(i, true);
-+    }
-+
-+    public void setSecondsOnFire(int i, boolean callEvent) {
-+        if (callEvent) {
-+            EntityCombustEvent event = new EntityCombustEvent(this.getBukkitEntity(), i);
-+            this.level.getCraftServer().getPluginManager().callEvent(event);
-+
-+            if (event.isCancelled()) {
-+                return;
-+            }
-+
-+            i = event.getDuration();
-+        }
-+        // CraftBukkit end
-         int j = i * 20;
- 
-         if (this instanceof EntityLiving) {
+
+  
 @@ -640,6 +793,28 @@
                      block.updateEntityAfterFallOn(this.level, this);
                  }
