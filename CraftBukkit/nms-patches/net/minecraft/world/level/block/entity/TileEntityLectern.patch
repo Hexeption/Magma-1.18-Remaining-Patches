@@ -143,9 +143,9 @@
  
          Vec3D vec3d = Vec3D.atCenterOf(this.worldPosition);
  
--        return new CommandListenerWrapper(ICommandListener.NULL, vec3d, Vec2F.ZERO, (WorldServer) this.level, 2, s, (IChatBaseComponent) object, this.level.getServer(), entityhuman);
+-        return new CommandListenerWrapper(ICommandListener.NULL, vec3d, Vec2F.ZERO, (ServerLevel) this.level, 2, s, (IChatBaseComponent) object, this.level.getServer(), entityhuman);
 +        // CraftBukkit - this
-+        return new CommandListenerWrapper(this, vec3d, Vec2F.ZERO, (WorldServer) this.level, 2, s, (IChatBaseComponent) object, this.level.getServer(), entityhuman);
++        return new CommandListenerWrapper(this, vec3d, Vec2F.ZERO, (ServerLevel) this.level, 2, s, (IChatBaseComponent) object, this.level.getServer(), entityhuman);
      }
  
      @Override

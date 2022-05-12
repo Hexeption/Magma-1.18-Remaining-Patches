@@ -19,5 +19,5 @@
          this.gameEvent(entity, gameevent, entity1.blockPosition());
      }
 +
-+    net.minecraft.server.level.WorldServer getMinecraftWorld(); // CraftBukkit
++    net.minecraft.server.level.ServerLevel getMinecraftWorld(); // CraftBukkit
  }

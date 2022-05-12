@@ -15,7 +15,7 @@
      private static final DataWatcherObject<Integer> DATA_SWELL_DIR = DataWatcher.defineId(EntityCreeper.class, DataWatcherRegistry.INT);
 @@ -219,9 +225,19 @@
      @Override
-     public void thunderHit(WorldServer worldserver, EntityLightning entitylightning) {
+     public void thunderHit(ServerLevel worldserver, EntityLightning entitylightning) {
          super.thunderHit(worldserver, entitylightning);
 -        this.entityData.set(EntityCreeper.DATA_IS_POWERED, true);
 +        // CraftBukkit start

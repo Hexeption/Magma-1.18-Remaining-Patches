@@ -67,7 +67,7 @@
 @@ -209,7 +225,13 @@
      }
  
-     private void finishConversion(WorldServer worldserver) {
+     private void finishConversion(ServerLevel worldserver) {
 -        EntityVillager entityvillager = (EntityVillager) this.convertTo(EntityTypes.VILLAGER, false);
 +        // CraftBukkit start
 +        EntityVillager entityvillager = (EntityVillager) this.convertTo(EntityTypes.VILLAGER, false, EntityTransformEvent.TransformReason.CURED, CreatureSpawnEvent.SpawnReason.CURED);

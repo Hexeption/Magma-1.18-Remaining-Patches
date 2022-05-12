@@ -91,9 +91,9 @@
          String s = entityplayer == null ? "Sign" : entityplayer.getName().getString();
          Object object = entityplayer == null ? new ChatComponentText("Sign") : entityplayer.getDisplayName();
  
--        return new CommandListenerWrapper(ICommandListener.NULL, Vec3D.atCenterOf(this.worldPosition), Vec2F.ZERO, (WorldServer) this.level, 2, s, (IChatBaseComponent) object, this.level.getServer(), entityplayer);
+-        return new CommandListenerWrapper(ICommandListener.NULL, Vec3D.atCenterOf(this.worldPosition), Vec2F.ZERO, (ServerLevel) this.level, 2, s, (IChatBaseComponent) object, this.level.getServer(), entityplayer);
 +        // CraftBukkit - this
-+        return new CommandListenerWrapper(this, Vec3D.atCenterOf(this.worldPosition), Vec2F.ZERO, (WorldServer) this.level, 2, s, (IChatBaseComponent) object, this.level.getServer(), entityplayer);
++        return new CommandListenerWrapper(this, Vec3D.atCenterOf(this.worldPosition), Vec2F.ZERO, (ServerLevel) this.level, 2, s, (IChatBaseComponent) object, this.level.getServer(), entityplayer);
      }
  
      public EnumColor getColor() {

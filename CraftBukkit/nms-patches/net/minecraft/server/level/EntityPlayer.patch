@@ -15,7 +15,7 @@
 +
 +    // Yes, this doesn't match Vanilla, but it's the best we can do for now.
 +    // If this is an issue, PRs are welcome
-+    public final BlockPosition getSpawnPoint(WorldServer worldserver) {
++    public final BlockPosition getSpawnPoint(ServerLevel worldserver) {
 +        BlockPosition blockposition = worldserver.getSharedSpawnPos();
 +
 +        if (worldserver.dimensionType().hasSkyLight() && worldserver.serverLevelData.getGameType() != EnumGamemode.ADVENTURE) {
@@ -52,7 +52,7 @@
      }
 +    // CraftBukkit end
  
-     private void fudgeSpawnLocation(WorldServer worldserver) {
+     private void fudgeSpawnLocation(ServerLevel worldserver) {
          BlockPosition blockposition = worldserver.getSharedSpawnPos();
  
 -        if (worldserver.dimensionType().hasSkyLight() && worldserver.getServer().getWorldData().getGameType() != EnumGamemode.ADVENTURE) {
@@ -136,17 +136,17 @@
 +            if (this.respawnDimension != null) {
 +                world = this.getLevel().getCraftServer().getHandle().getServer().getLevel(this.respawnDimension);
 +                if (world != null && this.getRespawnPosition() != null) {
-+                    position = EntityHuman.findRespawnPositionAndUseSpawnBlock((WorldServer) world, this.getRespawnPosition(), this.getRespawnAngle(), false, false).orElse(null);
++                    position = EntityHuman.findRespawnPositionAndUseSpawnBlock((ServerLevel) world, this.getRespawnPosition(), this.getRespawnAngle(), false, false).orElse(null);
 +                }
 +            }
 +            if (world == null || position == null) {
 +                world = ((CraftWorld) Bukkit.getServer().getWorlds().get(0)).getHandle();
-+                position = Vec3D.atCenterOf(((WorldServer) world).getSharedSpawnPos());
++                position = Vec3D.atCenterOf(((ServerLevel) world).getSharedSpawnPos());
 +            }
 +            this.level = world;
 +            this.setPos(position.x(), position.y(), position.z());
 +        }
-+        this.gameMode.setLevel((WorldServer) world);
++        this.gameMode.setLevel((ServerLevel) world);
 +    }
 +    // CraftBukkit end
 +
@@ -323,7 +323,7 @@
  
      @Nullable
      @Override
-     protected ShapeDetectorShape findDimensionEntryPoint(WorldServer worldserver) {
+     protected ShapeDetectorShape findDimensionEntryPoint(ServerLevel worldserver) {
          ShapeDetectorShape shapedetectorshape = super.findDimensionEntryPoint(worldserver);
 +        worldserver = (shapedetectorshape == null) ? worldserver : shapedetectorshape.world; // CraftBukkit
  
@@ -339,18 +339,18 @@
 @@ -756,11 +958,20 @@
      @Nullable
      @Override
-     public Entity changeDimension(WorldServer worldserver) {
+     public Entity changeDimension(ServerLevel worldserver) {
 -        this.isChangingDimension = true;
 +        // CraftBukkit start
 +        return changeDimension(worldserver, TeleportCause.UNKNOWN);
 +    }
 +
 +    @Nullable
-+    public Entity changeDimension(WorldServer worldserver, PlayerTeleportEvent.TeleportCause cause) {
++    public Entity changeDimension(ServerLevel worldserver, PlayerTeleportEvent.TeleportCause cause) {
 +        // CraftBukkit end
 +        if (this.isSleeping()) return this; // CraftBukkit - SPIGOT-3154
 +        // this.isChangingDimension = true; // CraftBukkit - Moved down and into PlayerList#changeDimension
-         WorldServer worldserver1 = this.getLevel();
+         ServerLevel worldserver1 = this.getLevel();
 -        ResourceKey<World> resourcekey = worldserver1.dimension();
 +        ResourceKey<WorldDimension> resourcekey = worldserver1.getTypeKey(); // CraftBukkit
  
@@ -445,9 +445,9 @@
  
 +    // CraftBukkit start
 +    @Override
-+    protected CraftPortalEvent callPortalEvent(Entity entity, WorldServer exitWorldServer, BlockPosition exitPosition, TeleportCause cause, int searchRadius, int creationRadius) {
++    protected CraftPortalEvent callPortalEvent(Entity entity, ServerLevel exitServerLevel, BlockPosition exitPosition, TeleportCause cause, int searchRadius, int creationRadius) {
 +        Location enter = this.getBukkitEntity().getLocation();
-+        Location exit = new Location(exitWorldServer.getWorld(), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ(), getYRot(), getXRot());
++        Location exit = new Location(exitServerLevel.getWorld(), exitPosition.getX(), exitPosition.getY(), exitPosition.getZ(), getYRot(), getXRot());
 +        PlayerPortalEvent event = new PlayerPortalEvent(this.getBukkitEntity(), enter, exit, cause, searchRadius, true, creationRadius);
 +        Bukkit.getServer().getPluginManager().callEvent(event);
 +        if (event.isCancelled() || event.getTo() == null || event.getTo().getWorld() == null) {
@@ -457,16 +457,16 @@
 +    }
 +    // CraftBukkit end
 +
-     private void createEndPlatform(WorldServer worldserver, BlockPosition blockposition) {
+     private void createEndPlatform(ServerLevel worldserver, BlockPosition blockposition) {
          BlockPosition.MutableBlockPosition blockposition_mutableblockposition = blockposition.mutable();
  
 @@ -835,17 +1097,17 @@
      }
  
      @Override
--    protected Optional<BlockUtil.Rectangle> getExitPortal(WorldServer worldserver, BlockPosition blockposition, boolean flag, WorldBorder worldborder) {
+-    protected Optional<BlockUtil.Rectangle> getExitPortal(ServerLevel worldserver, BlockPosition blockposition, boolean flag, WorldBorder worldborder) {
 -        Optional<BlockUtil.Rectangle> optional = super.getExitPortal(worldserver, blockposition, flag, worldborder);
-+    protected Optional<BlockUtil.Rectangle> getExitPortal(WorldServer worldserver, BlockPosition blockposition, boolean flag, WorldBorder worldborder, int searchRadius, boolean canCreatePortal, int createRadius) { // CraftBukkit
++    protected Optional<BlockUtil.Rectangle> getExitPortal(ServerLevel worldserver, BlockPosition blockposition, boolean flag, WorldBorder worldborder, int searchRadius, boolean canCreatePortal, int createRadius) { // CraftBukkit
 +        Optional<BlockUtil.Rectangle> optional = super.getExitPortal(worldserver, blockposition, flag, worldborder, searchRadius, canCreatePortal, createRadius); // CraftBukkit
  
 -        if (optional.isPresent()) {
@@ -484,7 +484,7 @@
  
              return optional1;
 @@ -855,13 +1117,21 @@
-     public void triggerDimensionChangeTriggers(WorldServer worldserver) {
+     public void triggerDimensionChangeTriggers(ServerLevel worldserver) {
          ResourceKey<World> resourcekey = worldserver.dimension();
          ResourceKey<World> resourcekey1 = this.level.dimension();
 +        // CraftBukkit start
@@ -712,11 +712,11 @@
      }
  
 +    // CraftBukkit start
-     public void teleportTo(WorldServer worldserver, double d0, double d1, double d2, float f, float f1) {
+     public void teleportTo(ServerLevel worldserver, double d0, double d1, double d2, float f, float f1) {
 +        this.teleportTo(worldserver, d0, d1, d2, f, f1, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.UNKNOWN);
 +    }
 +
-+    public void teleportTo(WorldServer worldserver, double d0, double d1, double d2, float f, float f1, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause cause) {
++    public void teleportTo(ServerLevel worldserver, double d0, double d1, double d2, float f, float f1, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause cause) {
 +        // CraftBukkit end
          this.setCamera(this);
          this.stopRiding();

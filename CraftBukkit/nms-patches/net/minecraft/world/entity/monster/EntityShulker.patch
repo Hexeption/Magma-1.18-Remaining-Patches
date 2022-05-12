@@ -5,7 +5,7 @@
  import net.minecraft.world.phys.Vec3D;
  
 +// CraftBukkit start
-+import net.minecraft.server.level.WorldServer;
++import net.minecraft.server.level.ServerLevel;
 +import org.bukkit.Location;
 +import org.bukkit.event.entity.EntityTeleportEvent;
 +// CraftBukkit end

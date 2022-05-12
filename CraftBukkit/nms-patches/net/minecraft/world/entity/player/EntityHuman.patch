@@ -230,7 +230,7 @@
 +                                // CraftBukkit end
                              }
  
-                             if (this.level instanceof WorldServer && f5 > 2.0F) {
+                             if (this.level instanceof ServerLevel && f5 > 2.0F) {
 @@ -1228,12 +1342,17 @@
                              }
                          }
@@ -433,9 +433,9 @@
                  }
  
                  entity.setPos(this.getX(), this.getY() + 0.699999988079071D, this.getZ());
--                ((WorldServer) this.level).addWithUUID(entity);
+-                ((ServerLevel) this.level).addWithUUID(entity);
 -            });
-+                return ((WorldServer) this.level).addWithUUID(entity, CreatureSpawnEvent.SpawnReason.SHOULDER_ENTITY); // CraftBukkit
++                return ((ServerLevel) this.level).addWithUUID(entity, CreatureSpawnEvent.SpawnReason.SHOULDER_ENTITY); // CraftBukkit
 +            }).orElse(true); // CraftBukkit
          }
  

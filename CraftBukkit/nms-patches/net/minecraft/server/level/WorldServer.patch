@@ -1,5 +1,5 @@
---- a/net/minecraft/server/level/WorldServer.java
-+++ b/net/minecraft/server/level/WorldServer.java
+--- a/net/minecraft/server/level/ServerLevel.java
++++ b/net/minecraft/server/level/ServerLevel.java
 @@ -150,6 +150,20 @@
  import net.minecraft.world.ticks.TickListServer;
  import org.slf4j.Logger;
@@ -18,7 +18,7 @@
 +import org.bukkit.event.world.TimeSkipEvent;
 +// CraftBukkit end
 +
- public class WorldServer extends World implements GeneratorAccessSeed {
+ public class ServerLevel extends World implements GeneratorAccessSeed {
  
      public static final BlockPosition END_SPAWN_POINT = new BlockPosition(100, 50, 0);
 @@ -167,7 +181,7 @@
@@ -34,7 +34,7 @@
      private final StructureCheck structureCheck;
      private final boolean tickTime;
  
--    public WorldServer(MinecraftServer minecraftserver, Executor executor, Convertable.ConversionSession convertable_conversionsession, IWorldDataServer iworlddataserver, ResourceKey<World> resourcekey, Holder<DimensionManager> holder, WorldLoadListener worldloadlistener, ChunkGenerator chunkgenerator, boolean flag, long i, List<MobSpawner> list, boolean flag1) {
+-    public ServerLevel(MinecraftServer minecraftserver, Executor executor, Convertable.ConversionSession convertable_conversionsession, IWorldDataServer iworlddataserver, ResourceKey<World> resourcekey, Holder<DimensionManager> holder, WorldLoadListener worldloadlistener, ChunkGenerator chunkgenerator, boolean flag, long i, List<MobSpawner> list, boolean flag1) {
 -        Objects.requireNonNull(minecraftserver);
 -        super(iworlddataserver, resourcekey, holder, minecraftserver::getProfiler, false, flag, i);
 +
@@ -53,7 +53,7 @@
 +    }
 +
 +    // Add env and gen to constructor, WorldData -> WorldDataServer
-+    public WorldServer(MinecraftServer minecraftserver, Executor executor, Convertable.ConversionSession convertable_conversionsession, IWorldDataServer iworlddataserver, ResourceKey<World> resourcekey, Holder<DimensionManager> holder, WorldLoadListener worldloadlistener, ChunkGenerator chunkgenerator, boolean flag, long i, List<MobSpawner> list, boolean flag1, org.bukkit.World.Environment env, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider) {
++    public ServerLevel(MinecraftServer minecraftserver, Executor executor, Convertable.ConversionSession convertable_conversionsession, IWorldDataServer iworlddataserver, ResourceKey<World> resourcekey, Holder<DimensionManager> holder, WorldLoadListener worldloadlistener, ChunkGenerator chunkgenerator, boolean flag, long i, List<MobSpawner> list, boolean flag1, org.bukkit.World.Environment env, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider) {
 +        // Objects.requireNonNull(minecraftserver); // CraftBukkit - decompile error
 +        super(iworlddataserver, resourcekey, holder, minecraftserver::getProfiler, false, flag, i, gen, biomeProvider, env);
 +        this.pvpMode = minecraftserver.isPvpAllowed();
@@ -267,7 +267,7 @@
          }
 +
 +        // CraftBukkit start - moved from MinecraftServer.saveChunks
-+        WorldServer worldserver1 = this;
++        ServerLevel worldserver1 = this;
 +
 +        serverLevelData.setWorldBorder(worldserver1.getWorldBorder().createSettings());
 +        serverLevelData.setCustomBossEvents(this.server.getCustomBossEvents().save());
@@ -397,26 +397,6 @@
 @@ -1070,13 +1244,20 @@
      }
  
-     public <T extends ParticleParam> int sendParticles(T t0, double d0, double d1, double d2, int i, double d3, double d4, double d5, double d6) {
--        PacketPlayOutWorldParticles packetplayoutworldparticles = new PacketPlayOutWorldParticles(t0, false, d0, d1, d2, (float) d3, (float) d4, (float) d5, (float) d6, i);
-+        // CraftBukkit - visibility api support
-+        return sendParticles(null, t0, d0, d1, d2, i, d3, d4, d5, d6, false);
-+    }
-+
-+    public <T extends ParticleParam> int sendParticles(EntityPlayer sender, T t0, double d0, double d1, double d2, int i, double d3, double d4, double d5, double d6, boolean force) {
-+        PacketPlayOutWorldParticles packetplayoutworldparticles = new PacketPlayOutWorldParticles(t0, force, d0, d1, d2, (float) d3, (float) d4, (float) d5, (float) d6, i);
-+        // CraftBukkit end
-         int j = 0;
- 
-         for (int k = 0; k < this.players.size(); ++k) {
-             EntityPlayer entityplayer = (EntityPlayer) this.players.get(k);
-+            if (sender != null && !entityplayer.getBukkitEntity().canSee(sender.getBukkitEntity())) continue; // CraftBukkit
- 
--            if (this.sendParticles(entityplayer, false, d0, d1, d2, packetplayoutworldparticles)) {
-+            if (this.sendParticles(entityplayer, force, d0, d1, d2, packetplayoutworldparticles)) { // CraftBukkit
-                 ++j;
-             }
-         }
 @@ -1127,7 +1308,7 @@
  
      @Nullable
@@ -497,14 +477,14 @@
 @@ -1552,17 +1748,33 @@
      }
  
-     public static void makeObsidianPlatform(WorldServer worldserver) {
+     public static void makeObsidianPlatform(ServerLevel worldserver) {
 +        // CraftBukkit start
-+        WorldServer.makeObsidianPlatform(worldserver, null);
++        ServerLevel.makeObsidianPlatform(worldserver, null);
 +    }
 +
-+    public static void makeObsidianPlatform(WorldServer worldserver, Entity entity) {
++    public static void makeObsidianPlatform(ServerLevel worldserver, Entity entity) {
 +        // CraftBukkit end
-         BlockPosition blockposition = WorldServer.END_SPAWN_POINT;
+         BlockPosition blockposition = ServerLevel.END_SPAWN_POINT;
          int i = blockposition.getX();
          int j = blockposition.getY() - 2;
          int k = blockposition.getZ();

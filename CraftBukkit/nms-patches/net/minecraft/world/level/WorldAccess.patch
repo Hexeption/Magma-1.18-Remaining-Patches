@@ -1,7 +1,7 @@
 --- a/net/minecraft/world/level/WorldAccess.java
 +++ b/net/minecraft/world/level/WorldAccess.java
 @@ -8,6 +8,17 @@
-     WorldServer getLevel();
+     ServerLevel getLevel();
  
      default void addFreshEntityWithPassengers(Entity entity) {
 -        entity.getSelfAndPassengers().forEach(this::addFreshEntity);
@@ -14,7 +14,7 @@
 +    }
 +
 +    @Override
-+    default WorldServer getMinecraftWorld() {
++    default ServerLevel getMinecraftWorld() {
 +        return getLevel();
 +    }
 +    // CraftBukkit end

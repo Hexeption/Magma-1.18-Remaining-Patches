@@ -20,7 +20,7 @@
 +                                }
 +                                // CraftBukkit end
                                  if (this.level.setBlock(blockposition, this.blockState, 3)) {
-                                     ((WorldServer) this.level).getChunkSource().chunkMap.broadcast(this, new PacketPlayOutBlockChange(blockposition, this.level.getBlockState(blockposition)));
+                                     ((ServerLevel) this.level).getChunkSource().chunkMap.broadcast(this, new PacketPlayOutBlockChange(blockposition, this.level.getBlockState(blockposition)));
                                      this.discard();
 @@ -236,7 +244,7 @@
              if (i < 0) {

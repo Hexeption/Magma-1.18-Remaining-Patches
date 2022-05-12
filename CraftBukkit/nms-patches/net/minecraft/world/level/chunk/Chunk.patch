@@ -5,7 +5,7 @@
      public boolean loaded;
      private boolean clientLightReady;
 -    public final World level;
-+    public final WorldServer level; // CraftBukkit - type
++    public final ServerLevel level; // CraftBukkit - type
      @Nullable
      private Supplier<PlayerChunk.State> fullStatus;
      @Nullable
@@ -14,7 +14,7 @@
          this.tickersInLevel = Maps.newHashMap();
          this.clientLightReady = false;
 -        this.level = world;
-+        this.level = (WorldServer) world; // CraftBukkit - type
++        this.level = (ServerLevel) world; // CraftBukkit - type
          this.gameEventDispatcherSections = new Int2ObjectOpenHashMap();
          HeightMap.Type[] aheightmap_type = HeightMap.Type.values();
          int j = aheightmap_type.length;
@@ -36,7 +36,7 @@
 +
 +    // CraftBukkit end
 +
-     public Chunk(WorldServer worldserver, ProtoChunk protochunk, @Nullable Chunk.c chunk_c) {
+     public Chunk(ServerLevel worldserver, ProtoChunk protochunk, @Nullable Chunk.c chunk_c) {
          this(worldserver, protochunk.getPos(), protochunk.getUpgradeData(), protochunk.unpackBlockTicks(), protochunk.unpackFluidTicks(), protochunk.getInhabitedTime(), protochunk.getSections(), chunk_c, protochunk.getBlendingData());
          Iterator iterator = protochunk.getBlockEntities().values().iterator();
 @@ -142,6 +154,10 @@

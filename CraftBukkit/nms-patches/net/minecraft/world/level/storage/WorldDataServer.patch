@@ -7,7 +7,7 @@
 +// CraftBukkit start
 +import net.minecraft.network.protocol.game.PacketPlayOutServerDifficulty;
 +import net.minecraft.server.level.EntityPlayer;
-+import net.minecraft.server.level.WorldServer;
++import net.minecraft.server.level.ServerLevel;
 +import org.bukkit.Bukkit;
 +import org.bukkit.event.weather.ThunderChangeEvent;
 +import org.bukkit.event.weather.WeatherChangeEvent;
@@ -21,10 +21,10 @@
      private boolean wasModded;
      private final CustomFunctionCallbackTimerQueue<MinecraftServer> scheduledEvents;
 +    // CraftBukkit start - Add world and pdc
-+    private WorldServer world;
++    private ServerLevel world;
 +    protected NBTBase pdc;
 +
-+    public void setWorld(WorldServer world) {
++    public void setWorld(ServerLevel world) {
 +        if (this.world != null) {
 +            return;
 +        }

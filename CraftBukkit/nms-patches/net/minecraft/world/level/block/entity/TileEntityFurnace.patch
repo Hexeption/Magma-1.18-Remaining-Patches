@@ -184,8 +184,8 @@
          return list;
      }
  
--    private static void createExperience(WorldServer worldserver, Vec3D vec3d, int i, float f) {
-+    private static void createExperience(WorldServer worldserver, Vec3D vec3d, int i, float f, BlockPosition blockposition, EntityHuman entityhuman, ItemStack itemstack, int amount) { // CraftBukkit
+-    private static void createExperience(ServerLevel worldserver, Vec3D vec3d, int i, float f) {
++    private static void createExperience(ServerLevel worldserver, Vec3D vec3d, int i, float f, BlockPosition blockposition, EntityHuman entityhuman, ItemStack itemstack, int amount) { // CraftBukkit
          int j = MathHelper.floor((float) i * f);
          float f1 = MathHelper.frac((float) i * f);
  

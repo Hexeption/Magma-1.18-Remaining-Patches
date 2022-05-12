@@ -51,4 +51,4 @@
 +        // CraftBukkit end
          if (!this.level.isClientSide) {
              this.playSound(SoundEffects.SHULKER_BULLET_HURT, 1.0F, 1.0F);
-             ((WorldServer) this.level).sendParticles(Particles.CRIT, this.getX(), this.getY(), this.getZ(), 15, 0.2D, 0.2D, 0.2D, 0.0D);
+             ((ServerLevel) this.level).sendParticles(Particles.CRIT, this.getX(), this.getY(), this.getZ(), 15, 0.2D, 0.2D, 0.2D, 0.0D);

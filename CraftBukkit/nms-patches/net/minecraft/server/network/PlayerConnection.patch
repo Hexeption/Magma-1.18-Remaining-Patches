@@ -418,7 +418,7 @@
      @Override
 @@ -853,7 +1079,7 @@
          } else {
-             WorldServer worldserver = this.player.getLevel();
+             ServerLevel worldserver = this.player.getLevel();
  
 -            if (!this.player.wonGame) {
 +            if (!this.player.wonGame && !this.player.isImmobile()) { // CraftBukkit
@@ -726,7 +726,7 @@
      public void handleUseItemOn(PacketPlayInUseItem packetplayinuseitem) {
          PlayerConnectionUtils.ensureRunningOnSameThread(packetplayinuseitem, this, this.player.getLevel());
 +        if (this.player.isImmobile()) return; // CraftBukkit
-         WorldServer worldserver = this.player.getLevel();
+         ServerLevel worldserver = this.player.getLevel();
          EnumHand enumhand = packetplayinuseitem.getHand();
          ItemStack itemstack = this.player.getItemInHand(enumhand);
 @@ -1088,6 +1507,7 @@
@@ -742,7 +742,7 @@
      public void handleUseItem(PacketPlayInBlockPlace packetplayinblockplace) {
          PlayerConnectionUtils.ensureRunningOnSameThread(packetplayinblockplace, this, this.player.getLevel());
 +        if (this.player.isImmobile()) return; // CraftBukkit
-         WorldServer worldserver = this.player.getLevel();
+         ServerLevel worldserver = this.player.getLevel();
          EnumHand enumhand = packetplayinblockplace.getHand();
          ItemStack itemstack = this.player.getItemInHand(enumhand);
  
@@ -1141,7 +1141,7 @@
      public void handleInteract(PacketPlayInUseEntity packetplayinuseentity) {
          PlayerConnectionUtils.ensureRunningOnSameThread(packetplayinuseentity, this, this.player.getLevel());
 +        if (this.player.isImmobile()) return; // CraftBukkit
-         WorldServer worldserver = this.player.getLevel();
+         ServerLevel worldserver = this.player.getLevel();
          final Entity entity = packetplayinuseentity.getTarget(worldserver);
  
 @@ -1356,10 +2049,44 @@
@@ -1228,7 +1228,7 @@
      private void updateSignText(PacketPlayInUpdateSign packetplayinupdatesign, List<ITextFilter.a> list) {
 +        if (this.player.isImmobile()) return; // CraftBukkit
          this.player.resetLastActionTime();
-         WorldServer worldserver = this.player.getLevel();
+         ServerLevel worldserver = this.player.getLevel();
          BlockPosition blockposition = packetplayinupdatesign.getPos();
 @@ -1552,18 +2608,37 @@
  

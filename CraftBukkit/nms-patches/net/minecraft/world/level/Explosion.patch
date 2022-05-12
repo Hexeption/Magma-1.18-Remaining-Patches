@@ -136,7 +136,7 @@
                  BlockPosition blockposition = (BlockPosition) iterator.next();
 @@ -273,8 +361,8 @@
                          TileEntity tileentity = iblockdata.hasBlockEntity() ? this.level.getBlockEntity(blockposition) : null;
-                         LootTableInfo.Builder loottableinfo_builder = (new LootTableInfo.Builder((WorldServer) this.level)).withRandom(this.level.random).withParameter(LootContextParameters.ORIGIN, Vec3D.atCenterOf(blockposition)).withParameter(LootContextParameters.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParameters.BLOCK_ENTITY, tileentity).withOptionalParameter(LootContextParameters.THIS_ENTITY, this.source);
+                         LootTableInfo.Builder loottableinfo_builder = (new LootTableInfo.Builder((ServerLevel) this.level)).withRandom(this.level.random).withParameter(LootContextParameters.ORIGIN, Vec3D.atCenterOf(blockposition)).withParameter(LootContextParameters.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParameters.BLOCK_ENTITY, tileentity).withOptionalParameter(LootContextParameters.THIS_ENTITY, this.source);
  
 -                        if (this.blockInteraction == Explosion.Effect.DESTROY) {
 -                            loottableinfo_builder.withParameter(LootContextParameters.EXPLOSION_RADIUS, this.radius);

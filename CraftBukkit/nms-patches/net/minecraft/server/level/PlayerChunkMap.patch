@@ -13,60 +13,11 @@
  
      private static final byte CHUNK_TYPE_REPLACEABLE = -1;
 @@ -139,6 +144,27 @@
-     private final Queue<Runnable> unloadQueue;
-     int viewDistance;
- 
-+    // CraftBukkit start - recursion-safe executor for Chunk loadCallback() and unloadCallback()
-+    public final CallbackExecutor callbackExecutor = new CallbackExecutor();
-+    public static final class CallbackExecutor implements java.util.concurrent.Executor, Runnable {
-+
-+        private final java.util.Queue<Runnable> queue = new java.util.ArrayDeque<>();
-+
-+        @Override
-+        public void execute(Runnable runnable) {
-+            queue.add(runnable);
-+        }
-+
-+        @Override
-+        public void run() {
-+            Runnable task;
-+            while ((task = queue.poll()) != null) {
-+                task.run();
-+            }
-+        }
-+    };
-+    // CraftBukkit end
-+
-     public PlayerChunkMap(WorldServer worldserver, Convertable.ConversionSession convertable_conversionsession, DataFixer datafixer, DefinedStructureManager definedstructuremanager, Executor executor, IAsyncTaskHandler<Runnable> iasynctaskhandler, ILightAccess ilightaccess, ChunkGenerator chunkgenerator, WorldLoadListener worldloadlistener, ChunkStatusUpdateListener chunkstatusupdatelistener, Supplier<WorldPersistentData> supplier, int i, boolean flag) {
-         super(convertable_conversionsession.getDimensionPath(worldserver.dimension()).resolve("region"), datafixer, flag);
-         this.visibleChunkMap = this.updatingChunkMap.clone();
 @@ -296,9 +322,12 @@
-         CompletableFuture<List<Either<IChunkAccess, PlayerChunk.Failure>>> completablefuture1 = SystemUtils.sequence(list);
-         CompletableFuture<Either<List<IChunkAccess>, PlayerChunk.Failure>> completablefuture2 = completablefuture1.thenApply((list2) -> {
-             List<IChunkAccess> list3 = Lists.newArrayList();
--            final int l1 = 0;
-+            // CraftBukkit start - decompile error
-+            int cnt = 0;
- 
--            for (Iterator iterator = list2.iterator(); iterator.hasNext(); ++l1) {
-+            for (Iterator iterator = list2.iterator(); iterator.hasNext(); ++cnt) {
-+                final int l1 = cnt;
-+                // CraftBukkit end
-                 final Either<IChunkAccess, PlayerChunk.Failure> either = (Either) iterator.next();
- 
-                 if (either == null) {
 @@ -503,7 +532,7 @@
- 
-     private void scheduleUnload(long i, PlayerChunk playerchunk) {
-         CompletableFuture<IChunkAccess> completablefuture = playerchunk.getChunkToSave();
--        Consumer consumer = (ichunkaccess) -> {
-+        Consumer<IChunkAccess> consumer = (ichunkaccess) -> { // CraftBukkit - decompile error
-             CompletableFuture<IChunkAccess> completablefuture1 = playerchunk.getChunkToSave();
- 
-             if (completablefuture1 != completablefuture) {
 @@ -683,7 +712,21 @@
  
-     private static void postLoadProtoChunk(WorldServer worldserver, List<NBTTagCompound> list) {
+     private static void postLoadProtoChunk(ServerLevel worldserver, List<NBTTagCompound> list) {
          if (!list.isEmpty()) {
 -            worldserver.addWorldGenChunkEntities(EntityTypes.loadEntitiesRecursive(list, worldserver));
 +            // CraftBukkit start - these are spawned serialized (DefinedStructure) and we don't call an add event below at the moment due to ordering complexities

@@ -97,8 +97,8 @@
          return new Vec3D(d2, d3, d4);
      }
  
--    public static ShapeDetectorShape createPortalInfo(WorldServer worldserver, BlockUtil.Rectangle blockutil_rectangle, EnumDirection.EnumAxis enumdirection_enumaxis, Vec3D vec3d, EntitySize entitysize, Vec3D vec3d1, float f, float f1) {
-+    public static ShapeDetectorShape createPortalInfo(WorldServer worldserver, BlockUtil.Rectangle blockutil_rectangle, EnumDirection.EnumAxis enumdirection_enumaxis, Vec3D vec3d, EntitySize entitysize, Vec3D vec3d1, float f, float f1, CraftPortalEvent portalEventInfo) { // CraftBukkit
+-    public static ShapeDetectorShape createPortalInfo(ServerLevel worldserver, BlockUtil.Rectangle blockutil_rectangle, EnumDirection.EnumAxis enumdirection_enumaxis, Vec3D vec3d, EntitySize entitysize, Vec3D vec3d1, float f, float f1) {
++    public static ShapeDetectorShape createPortalInfo(ServerLevel worldserver, BlockUtil.Rectangle blockutil_rectangle, EnumDirection.EnumAxis enumdirection_enumaxis, Vec3D vec3d, EntitySize entitysize, Vec3D vec3d1, float f, float f1, CraftPortalEvent portalEventInfo) { // CraftBukkit
          BlockPosition blockposition = blockutil_rectangle.minCorner;
          IBlockData iblockdata = worldserver.getBlockState(blockposition);
          EnumDirection.EnumAxis enumdirection_enumaxis1 = (EnumDirection.EnumAxis) iblockdata.getOptionalValue(BlockProperties.HORIZONTAL_AXIS).orElse(EnumDirection.EnumAxis.X);

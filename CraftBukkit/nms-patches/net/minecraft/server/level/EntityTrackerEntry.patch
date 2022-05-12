@@ -20,8 +20,8 @@
 +    // CraftBukkit start
 +    private final Set<ServerPlayerConnection> trackedPlayers;
  
--    public EntityTrackerEntry(WorldServer worldserver, Entity entity, int i, boolean flag, Consumer<Packet<?>> consumer) {
-+    public EntityTrackerEntry(WorldServer worldserver, Entity entity, int i, boolean flag, Consumer<Packet<?>> consumer, Set<ServerPlayerConnection> trackedPlayers) {
+-    public EntityTrackerEntry(ServerLevel worldserver, Entity entity, int i, boolean flag, Consumer<Packet<?>> consumer) {
++    public EntityTrackerEntry(ServerLevel worldserver, Entity entity, int i, boolean flag, Consumer<Packet<?>> consumer, Set<ServerPlayerConnection> trackedPlayers) {
 +        this.trackedPlayers = trackedPlayers;
 +        // CraftBukkit end
          this.ap = Vec3D.ZERO;

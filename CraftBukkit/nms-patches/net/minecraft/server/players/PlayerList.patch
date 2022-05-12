@@ -187,9 +187,9 @@
 -            Entity entity = EntityTypes.loadEntityRecursive(nbttagcompound1.getCompound("Entity"), worldserver1, (entity1) -> {
 -                return !worldserver1.addWithUUID(entity1) ? null : entity1;
 +            // CraftBukkit start
-+            WorldServer finalWorldServer = worldserver1;
-+            Entity entity = EntityTypes.loadEntityRecursive(nbttagcompound1.getCompound("Entity"), finalWorldServer, (entity1) -> {
-+                return !finalWorldServer.addWithUUID(entity1) ? null : entity1;
++            ServerLevel finalServerLevel = worldserver1;
++            Entity entity = EntityTypes.loadEntityRecursive(nbttagcompound1.getCompound("Entity"), finalServerLevel, (entity1) -> {
++                return !finalServerLevel.addWithUUID(entity1) ? null : entity1;
 +                // CraftBukkit end
              });
  
@@ -206,7 +206,7 @@
 @@ -306,30 +398,31 @@
      }
  
-     public void addWorldborderListener(WorldServer worldserver) {
+     public void addWorldborderListener(ServerLevel worldserver) {
 +        if (playerIo != null) return; // CraftBukkit
          worldserver.getWorldBorder().addListener(new IWorldBorderListener() {
              @Override
@@ -264,7 +264,7 @@
  
 -    public void remove(EntityPlayer entityplayer) {
 +    public String remove(EntityPlayer entityplayer) { // CraftBukkit - return string
-         WorldServer worldserver = entityplayer.getLevel();
+         ServerLevel worldserver = entityplayer.getLevel();
  
          entityplayer.awardStat(StatisticList.LEAVE_GAME);
 +
@@ -336,7 +336,7 @@
 +        return this.respawn(entityplayer, this.server.getLevel(entityplayer.getRespawnDimension()), flag, null, true);
 +    }
 +
-+    public EntityPlayer respawn(EntityPlayer entityplayer, WorldServer worldserver, boolean flag, Location location, boolean avoidSuffocation) {
++    public EntityPlayer respawn(EntityPlayer entityplayer, ServerLevel worldserver, boolean flag, Location location, boolean avoidSuffocation) {
 +        entityplayer.stopRiding(); // CraftBukkit
          this.players.remove(entityplayer);
          entityplayer.getLevel().removePlayerImmediately(entityplayer, Entity.RemovalReason.DISCARDED);
@@ -344,12 +344,12 @@
          float f = entityplayer.getRespawnAngle();
          boolean flag1 = entityplayer.isRespawnForced();
 +        /* CraftBukkit start
-         WorldServer worldserver = this.server.getLevel(entityplayer.getRespawnDimension());
+         ServerLevel worldserver = this.server.getLevel(entityplayer.getRespawnDimension());
          Optional optional;
  
 @@ -481,6 +661,11 @@
  
-         WorldServer worldserver1 = worldserver != null && optional.isPresent() ? worldserver : this.server.overworld();
+         ServerLevel worldserver1 = worldserver != null && optional.isPresent() ? worldserver : this.server.overworld();
          EntityPlayer entityplayer1 = new EntityPlayer(this.server, worldserver1, entityplayer.getGameProfile());
 +        // */
 +        EntityPlayer entityplayer1 = entityplayer;
@@ -371,7 +371,7 @@
 +        // CraftBukkit start - fire PlayerRespawnEvent
 +        if (location == null) {
 +            boolean isBedSpawn = false;
-+            WorldServer worldserver1 = this.server.getLevel(entityplayer.getRespawnDimension());
++            ServerLevel worldserver1 = this.server.getLevel(entityplayer.getRespawnDimension());
 +            if (worldserver1 != null) {
 +                Optional optional;
  
@@ -430,7 +430,7 @@
 +        } else {
 +            location.setWorld(worldserver.getWorld());
          }
-+        WorldServer worldserver1 = ((CraftWorld) location.getWorld()).getHandle();
++        ServerLevel worldserver1 = ((CraftWorld) location.getWorld()).getHandle();
 +        entityplayer1.forceSetPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
 +        // CraftBukkit end
  
@@ -573,7 +573,7 @@
 @@ -741,23 +1024,34 @@
      public void reloadWhiteList() {}
  
-     public void sendLevelInfo(EntityPlayer entityplayer, WorldServer worldserver) {
+     public void sendLevelInfo(EntityPlayer entityplayer, ServerLevel worldserver) {
 -        WorldBorder worldborder = this.server.overworld().getWorldBorder();
 +        WorldBorder worldborder = entityplayer.level.getWorldBorder(); // CraftBukkit
  

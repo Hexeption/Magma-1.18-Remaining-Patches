@@ -12,7 +12,7 @@
 +import net.minecraft.network.protocol.game.ClientboundSetBorderSizePacket;
 +import net.minecraft.network.protocol.game.ClientboundSetBorderWarningDelayPacket;
 +import net.minecraft.network.protocol.game.ClientboundSetBorderWarningDistancePacket;
-+import net.minecraft.server.level.WorldServer;
++import net.minecraft.server.level.ServerLevel;
 +import net.minecraft.world.entity.item.EntityItem;
 +import net.minecraft.world.level.border.IWorldBorderListener;
 +import net.minecraft.world.level.dimension.WorldDimension;
@@ -64,7 +64,7 @@
 +
 +    protected World(WorldDataMutable worlddatamutable, ResourceKey<World> resourcekey, Holder<DimensionManager> holder, Supplier<GameProfilerFiller> supplier, boolean flag, boolean flag1, long i, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env) {
 +        this.generator = gen;
-+        this.world = new CraftWorld((WorldServer) this, gen, biomeProvider, env);
++        this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
 +
 +        // CraftBukkit Ticks things
 +        for (SpawnCategory spawnCategory : SpawnCategory.values()) {
@@ -97,7 +97,7 @@
          this.biomeManager = new BiomeManager(this, i);
          this.isDebug = flag1;
 +        // CraftBukkit start
-+        getWorldBorder().world = (WorldServer) this;
++        getWorldBorder().world = (ServerLevel) this;
 +        // From PlayerList.setPlayerFileData
 +        getWorldBorder().addListener(new IWorldBorderListener() {
 +            @Override
@@ -231,7 +231,7 @@
 +
 +                // CraftBukkit start
 +                iblockdata1.updateIndirectNeighbourShapes(this, blockposition, k, j - 1); // Don't call an event for the old block to limit event spam
-+                CraftWorld world = ((WorldServer) this).getWorld();
++                CraftWorld world = ((ServerLevel) this).getWorld();
 +                if (world != null) {
 +                    BlockPhysicsEvent event = new BlockPhysicsEvent(world.getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ()), CraftBlockData.fromData(iblockdata));
 +                    this.getCraftServer().getPluginManager().callEvent(event);
@@ -262,7 +262,7 @@
  
              try {
 +                // CraftBukkit start
-+                CraftWorld world = ((WorldServer) this).getWorld();
++                CraftWorld world = ((ServerLevel) this).getWorld();
 +                if (world != null) {
 +                    BlockPhysicsEvent event = new BlockPhysicsEvent(world.getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ()), CraftBlockData.fromData(iblockdata), world.getBlockAt(blockposition1.getX(), blockposition1.getY(), blockposition1.getZ()));
 +                    this.getCraftServer().getPluginManager().callEvent(event);

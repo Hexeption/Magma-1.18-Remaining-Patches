@@ -15,7 +15,7 @@
 @@ -56,7 +61,11 @@
              BlockPosition blockposition = this.blockPosition();
  
-             if (((WorldServer) this.level).dragonFight() != null && this.level.getBlockState(blockposition).isAir()) {
+             if (((ServerLevel) this.level).dragonFight() != null && this.level.getBlockState(blockposition).isAir()) {
 -                this.level.setBlockAndUpdate(blockposition, BlockFireAbstract.getState(this.level, blockposition));
 +                // CraftBukkit start
 +                if (!CraftEventFactory.callBlockIgniteEvent(this.level, blockposition, this).isCancelled()) {

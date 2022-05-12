@@ -372,4 +372,4 @@
 +        // CraftBukkit end
      }
  
-     public void setLevel(WorldServer worldserver) {
+     public void setLevel(ServerLevel worldserver) {

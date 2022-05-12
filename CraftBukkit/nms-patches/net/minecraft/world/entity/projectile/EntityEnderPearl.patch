@@ -64,7 +64,7 @@
              } else if (entity != null) {
                  entity.teleportTo(this.getX(), this.getY(), this.getZ());
 @@ -96,7 +116,7 @@
-     public Entity changeDimension(WorldServer worldserver) {
+     public Entity changeDimension(ServerLevel worldserver) {
          Entity entity = this.getOwner();
  
 -        if (entity != null && entity.level.dimension() != worldserver.dimension()) {

@@ -77,7 +77,7 @@
 +        for (WorldDimension worldDimension : iregistry) {
 +            ResourceKey<WorldDimension> dimensionKey = iregistry.getResourceKey(worldDimension).get();
 +
-+            WorldServer world;
++            ServerLevel world;
 +            int dimension = 0;
 +
 +            if (dimensionKey == WorldDimension.NETHER) {
@@ -205,14 +205,14 @@
 +
 +                WorldLoadListener worldloadlistener = this.progressListenerFactory.create(11);
 +
-+                world = new WorldServer(this, this.executor, worldSession, iworlddataserver, worldKey, holder, worldloadlistener, chunkgenerator, flag, j, list, true, org.bukkit.World.Environment.getEnvironment(dimension), gen, biomeProvider);
++                world = new ServerLevel(this, this.executor, worldSession, iworlddataserver, worldKey, holder, worldloadlistener, chunkgenerator, flag, j, list, true, org.bukkit.World.Environment.getEnvironment(dimension), gen, biomeProvider);
 +                WorldPersistentData worldpersistentdata = world.getDataStorage();
 +                this.readScoreboard(worldpersistentdata);
 +                this.server.scoreboardManager = new org.bukkit.craftbukkit.scoreboard.CraftScoreboardManager(this, world.getScoreboard());
 +                this.commandStorage = new PersistentCommandStorage(worldpersistentdata);
 +            } else {
 +                WorldLoadListener worldloadlistener = this.progressListenerFactory.create(11);
-+                world = new WorldServer(this, this.executor, worldSession, iworlddataserver, worldKey, holder, worldloadlistener, chunkgenerator, flag, j, ImmutableList.of(), true, org.bukkit.World.Environment.getEnvironment(dimension), gen, biomeProvider);
++                world = new ServerLevel(this, this.executor, worldSession, iworlddataserver, worldKey, holder, worldloadlistener, chunkgenerator, flag, j, ImmutableList.of(), true, org.bukkit.World.Environment.getEnvironment(dimension), gen, biomeProvider);
 +            }
 +
 +            worlddata.setModdedInfo(this.getServerModName(), this.getModdedStatus().shouldReportAsModified());
@@ -226,13 +226,13 @@
 +            }
 +        }
 +        this.forceDifficulty();
-+        for (WorldServer worldserver : this.getAllLevels()) {
++        for (ServerLevel worldserver : this.getAllLevels()) {
 +            this.prepareLevels(worldserver.getChunkSource().chunkMap.progressListener, worldserver);
 +            worldserver.entityManager.tick(); // SPIGOT-6526: Load pending entities so they are available to the API
 +            this.server.getPluginManager().callEvent(new org.bukkit.event.world.WorldLoadEvent(worldserver.getWorld()));
          }
  
--        WorldServer worldserver = new WorldServer(this, this.executor, this.storageSource, iworlddataserver, World.OVERWORLD, holder, worldloadlistener, (ChunkGenerator) object, flag, j, list, true);
+-        ServerLevel worldserver = new ServerLevel(this, this.executor, this.storageSource, iworlddataserver, World.OVERWORLD, holder, worldloadlistener, (ChunkGenerator) object, flag, j, list, true);
 +        this.server.enablePlugins(org.bukkit.plugin.PluginLoadOrder.POSTWORLD);
 +        this.server.getPluginManager().callEvent(new ServerLoadEvent(ServerLoadEvent.LoadType.STARTUP));
 +        this.connection.acceptConnections();
@@ -246,7 +246,7 @@
 -        this.readScoreboard(worldpersistentdata);
 -        this.commandStorage = new PersistentCommandStorage(worldpersistentdata);
 +    // CraftBukkit start
-+    public void initWorld(WorldServer worldserver, IWorldDataServer iworlddataserver, SaveData saveData, GeneratorSettings generatorsettings) {
++    public void initWorld(ServerLevel worldserver, IWorldDataServer iworlddataserver, SaveData saveData, GeneratorSettings generatorsettings) {
 +        boolean flag = generatorsettings.isDebug();
 +        // CraftBukkit start
 +        if (worldserver.generator != null) {
@@ -278,7 +278,7 @@
 -                Holder<DimensionManager> holder1 = ((WorldDimension) entry.getValue()).typeHolder();
 -                ChunkGenerator chunkgenerator = ((WorldDimension) entry.getValue()).generator();
 -                SecondaryWorldData secondaryworlddata = new SecondaryWorldData(this.worldData, iworlddataserver);
--                WorldServer worldserver1 = new WorldServer(this, this.executor, this.storageSource, secondaryworlddata, resourcekey1, holder1, worldloadlistener, chunkgenerator, flag, j, ImmutableList.of(), false);
+-                ServerLevel worldserver1 = new ServerLevel(this, this.executor, this.storageSource, secondaryworlddata, resourcekey1, holder1, worldloadlistener, chunkgenerator, flag, j, ImmutableList.of(), false);
 -
 -                worldborder.addListener(new IWorldBorderListener.a(worldserver1.getWorldBorder()));
 -                this.levels.put(resourcekey1, worldserver1);
@@ -289,7 +289,7 @@
      }
 +    // CraftBukkit end
  
-     private static void setInitialSpawn(WorldServer worldserver, IWorldDataServer iworlddataserver, boolean flag, boolean flag1) {
+     private static void setInitialSpawn(ServerLevel worldserver, IWorldDataServer iworlddataserver, boolean flag, boolean flag1) {
          if (flag1) {
 @@ -446,6 +651,21 @@
          } else {
@@ -318,14 +318,14 @@
      }
  
 -    public void prepareLevels(WorldLoadListener worldloadlistener) {
--        WorldServer worldserver = this.overworld();
+-        ServerLevel worldserver = this.overworld();
 +    // CraftBukkit start
-+    public void prepareLevels(WorldLoadListener worldloadlistener, WorldServer worldserver) {
++    public void prepareLevels(WorldLoadListener worldloadlistener, ServerLevel worldserver) {
 +        if (!worldserver.getWorld().getKeepSpawnInMemory()) {
 +            return;
 +        }
 +
-+        // WorldServer worldserver = this.overworld();
++        // ServerLevel worldserver = this.overworld();
 +        this.forceTicks = true;
 +        // CraftBukkit end
  
@@ -348,14 +348,14 @@
 -        Iterator iterator = this.levels.values().iterator();
 -
 -        while (iterator.hasNext()) {
--            WorldServer worldserver1 = (WorldServer) iterator.next();
+-            ServerLevel worldserver1 = (ServerLevel) iterator.next();
 +        // CraftBukkit start
 +        // this.nextTickTime = SystemUtils.getMillis() + 10L;
 +        this.executeModerately();
 +        // Iterator iterator = this.levels.values().iterator();
 +
 +        if (true) {
-+            WorldServer worldserver1 = worldserver;
++            ServerLevel worldserver1 = worldserver;
 +            // CraftBukkit end
              ForcedChunk forcedchunk = (ForcedChunk) worldserver1.getDataStorage().get(ForcedChunk::load, "chunks");
  
@@ -386,9 +386,9 @@
              worldserver.save((IProgressUpdate) null, flag1, worldserver.noSave && !flag2);
          }
  
-+        // CraftBukkit start - moved to WorldServer.save
++        // CraftBukkit start - moved to ServerLevel.save
 +        /*
-         WorldServer worldserver1 = this.overworld();
+         ServerLevel worldserver1 = this.overworld();
          IWorldDataServer iworlddataserver = this.worldData.overworldData();
  
          iworlddataserver.setWorldBorder(worldserver1.getWorldBorder().createSettings());
@@ -530,7 +530,7 @@
 +        }
 +
          while (iterator.hasNext()) {
-             WorldServer worldserver = (WorldServer) iterator.next();
+             ServerLevel worldserver = (ServerLevel) iterator.next();
  
              this.profiler.push(() -> {
                  return worldserver + " " + worldserver.dimension().location();
