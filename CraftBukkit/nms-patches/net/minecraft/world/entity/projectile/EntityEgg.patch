@@ -5,7 +5,7 @@
  import net.minecraft.world.phys.MovingObjectPositionEntity;
  
 +// CraftBukkit start
-+import net.minecraft.server.level.EntityPlayer;
++import net.minecraft.server.level.ServerPlayer;
 +import net.minecraft.world.entity.Entity;
 +import org.bukkit.entity.Ageable;
 +import org.bukkit.entity.EntityType;
@@ -38,7 +38,7 @@
 +                EntityType hatchingType = EntityType.CHICKEN;
 +
 +                Entity shooter = this.getOwner();
-+                if (shooter instanceof EntityPlayer) {
++                if (shooter instanceof ServerPlayer) {
 +                    PlayerEggThrowEvent event = new PlayerEggThrowEvent((Player) shooter.getBukkitEntity(), (org.bukkit.entity.Egg) this.getBukkitEntity(), hatching, b0, hatchingType);
 +                    this.level.getCraftServer().getPluginManager().callEvent(event);
 +

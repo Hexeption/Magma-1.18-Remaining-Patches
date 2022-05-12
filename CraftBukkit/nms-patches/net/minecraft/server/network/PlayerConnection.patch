@@ -1001,7 +1001,7 @@
 +                        String message = String.format(queueEvent.getFormat(), queueEvent.getPlayer().getDisplayName(), queueEvent.getMessage());
 +                        PlayerConnection.this.server.console.sendMessage(message);
 +                        if (((LazyPlayerSet) queueEvent.getRecipients()).isLazy()) {
-+                            for (EntityPlayer recipient : server.getPlayerList().players) {
++                            for (ServerPlayer recipient : server.getPlayerList().players) {
 +                                recipient.getBukkitEntity().sendMessage(PlayerConnection.this.player.getUUID(), message);
 +                            }
 +                        } else {
@@ -1031,7 +1031,7 @@
 +                s = String.format(event.getFormat(), event.getPlayer().getDisplayName(), event.getMessage());
 +                server.console.sendMessage(s);
 +                if (((LazyPlayerSet) event.getRecipients()).isLazy()) {
-+                    for (EntityPlayer recipient : server.getPlayerList().players) {
++                    for (ServerPlayer recipient : server.getPlayerList().players) {
 +                        recipient.getBukkitEntity().sendMessage(PlayerConnection.this.player.getUUID(), s);
 +                    }
 +                } else {

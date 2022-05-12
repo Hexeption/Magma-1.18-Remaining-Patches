@@ -86,7 +86,7 @@
              this.lastSectionPos = SectionPosition.of(entity);
 @@ -1449,12 +1493,17 @@
  
-         public void updatePlayer(EntityPlayer entityplayer) {
+         public void updatePlayer(ServerPlayer entityplayer) {
              if (entityplayer != this.entity) {
 -                Vec3D vec3d = entityplayer.position().subtract(this.serverEntity.sentPos());
 +                Vec3D vec3d = entityplayer.position().subtract(this.entity.position()); // MC-155077, SPIGOT-5113

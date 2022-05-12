@@ -6,7 +6,7 @@
  
 +// CraftBukkit start
 +import net.minecraft.network.protocol.game.PacketPlayOutServerDifficulty;
-+import net.minecraft.server.level.EntityPlayer;
++import net.minecraft.server.level.ServerPlayer;
 +import net.minecraft.server.level.ServerLevel;
 +import org.bukkit.Bukkit;
 +import org.bukkit.event.weather.ThunderChangeEvent;
@@ -121,7 +121,7 @@
          this.settings = this.settings.withDifficulty(enumdifficulty);
 +        // CraftBukkit start
 +        PacketPlayOutServerDifficulty packet = new PacketPlayOutServerDifficulty(this.getDifficulty(), this.isDifficultyLocked());
-+        for (EntityPlayer player : (java.util.List<EntityPlayer>) (java.util.List) world.players()) {
++        for (ServerPlayer player : (java.util.List<ServerPlayer>) (java.util.List) world.players()) {
 +            player.connection.send(packet);
 +        }
 +        // CraftBukkit end

@@ -22,7 +22,7 @@
  
      public static final BlockPosition END_SPAWN_POINT = new BlockPosition(100, 50, 0);
 @@ -167,7 +181,7 @@
-     final List<EntityPlayer> players;
+     final List<ServerPlayer> players;
      private final ChunkProviderServer chunkSource;
      private final MinecraftServer server;
 -    public final IWorldDataServer serverLevelData;
@@ -193,22 +193,22 @@
          }
 +        // */
 +        for (int idx = 0; idx < this.players.size(); ++idx) {
-+            if (((EntityPlayer) this.players.get(idx)).level == this) {
-+                ((EntityPlayer) this.players.get(idx)).tickWeather();
++            if (((ServerPlayer) this.players.get(idx)).level == this) {
++                ((ServerPlayer) this.players.get(idx)).tickWeather();
 +            }
 +        }
 +
 +        if (flag != this.isRaining()) {
 +            // Only send weather packets to those affected
 +            for (int idx = 0; idx < this.players.size(); ++idx) {
-+                if (((EntityPlayer) this.players.get(idx)).level == this) {
-+                    ((EntityPlayer) this.players.get(idx)).setPlayerWeather((!flag ? WeatherType.DOWNFALL : WeatherType.CLEAR), false);
++                if (((ServerPlayer) this.players.get(idx)).level == this) {
++                    ((ServerPlayer) this.players.get(idx)).setPlayerWeather((!flag ? WeatherType.DOWNFALL : WeatherType.CLEAR), false);
 +                }
 +            }
 +        }
 +        for (int idx = 0; idx < this.players.size(); ++idx) {
-+            if (((EntityPlayer) this.players.get(idx)).level == this) {
-+                ((EntityPlayer) this.players.get(idx)).updateWeather(this.oRainLevel, this.rainLevel, this.oThunderLevel, this.thunderLevel);
++            if (((ServerPlayer) this.players.get(idx)).level == this) {
++                ((ServerPlayer) this.players.get(idx)).updateWeather(this.oRainLevel, this.rainLevel, this.oThunderLevel, this.thunderLevel);
 +            }
 +        }
 +        // CraftBukkit end
@@ -305,7 +305,7 @@
 +        // CraftBukkit end
      }
  
-     public void addDuringCommandTeleport(EntityPlayer entityplayer) {
+     public void addDuringCommandTeleport(ServerPlayer entityplayer) {
 @@ -853,24 +966,36 @@
 @@ -884,10 +1009,32 @@
          entityplayer.remove(entity_removalreason);
@@ -338,7 +338,7 @@
 +        // CraftBukkit end
 +
          while (iterator.hasNext()) {
-             EntityPlayer entityplayer = (EntityPlayer) iterator.next();
+             ServerPlayer entityplayer = (ServerPlayer) iterator.next();
  
 @@ -896,6 +1043,12 @@
                  double d1 = (double) blockposition.getY() - entityplayer.getY();
@@ -524,8 +524,8 @@
  
 +            // CraftBukkit start
 +            entity.valid = false;
-+            if (!(entity instanceof EntityPlayer)) {
-+                for (EntityPlayer player : players) {
++            if (!(entity instanceof ServerPlayer)) {
++                for (ServerPlayer player : players) {
 +                    player.getBukkitEntity().onEntityRemove(entity);
 +                }
 +            }

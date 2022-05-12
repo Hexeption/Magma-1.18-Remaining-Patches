@@ -524,7 +524,7 @@
 +        // Send time updates to everyone, it will get the right time from the world the player is in.
 +        if (this.tickCount % 20 == 0) {
 +            for (int i = 0; i < this.getPlayerList().players.size(); ++i) {
-+                EntityPlayer entityplayer = (EntityPlayer) this.getPlayerList().players.get(i);
++                ServerPlayer entityplayer = (ServerPlayer) this.getPlayerList().players.get(i);
 +                entityplayer.connection.send(new PacketPlayOutUpdateTime(entityplayer.level.getGameTime(), entityplayer.getPlayerTime(), entityplayer.level.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT))); // Add support for per player time
 +            }
 +        }

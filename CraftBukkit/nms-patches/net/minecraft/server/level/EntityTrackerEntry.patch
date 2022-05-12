@@ -50,8 +50,8 @@
 +                    Iterator<ServerPlayerConnection> iterator = this.trackedPlayers.iterator(); // CraftBukkit
  
                      while (iterator.hasNext()) {
--                        EntityPlayer entityplayer = (EntityPlayer) iterator.next();
-+                        EntityPlayer entityplayer = iterator.next().getPlayer(); // CraftBukkit
+-                        ServerPlayer entityplayer = (ServerPlayer) iterator.next();
++                        ServerPlayer entityplayer = iterator.next().getPlayer(); // CraftBukkit
  
                          worldmap.tickCarriedBy(entityplayer, itemstack);
                          Packet<?> packet = worldmap.getUpdatePacket(integer, entityplayer);
@@ -97,7 +97,7 @@
 +            // CraftBukkit start - Create PlayerVelocity event
 +            boolean cancelled = false;
 +
-+            if (this.entity instanceof EntityPlayer) {
++            if (this.entity instanceof ServerPlayer) {
 +                Player player = (Player) this.entity.getBukkitEntity();
 +                org.bukkit.util.Vector velocity = player.getVelocity();
 +
@@ -128,7 +128,7 @@
      }
  
 -    public void sendPairingData(Consumer<Packet<?>> consumer) {
-+    public void sendPairingData(Consumer<Packet<?>> consumer, EntityPlayer entityplayer) { // CraftBukkit - add player
++    public void sendPairingData(Consumer<Packet<?>> consumer, ServerPlayer entityplayer) { // CraftBukkit - add player
          if (this.entity.isRemoved()) {
 -            EntityTrackerEntry.LOGGER.warn("Fetching packet for removed entity {}", this.entity);
 +            // CraftBukkit start - Remove useless error spam, just return
@@ -144,7 +144,7 @@
  
 +            // CraftBukkit start - If sending own attributes send scaled health instead of current maximum health
 +            if (this.entity.getId() == entityplayer.getId()) {
-+                ((EntityPlayer) this.entity).getBukkitEntity().injectScaledMaxHealth(collection, false);
++                ((ServerPlayer) this.entity).getBukkitEntity().injectScaledMaxHealth(collection, false);
 +            }
 +            // CraftBukkit end
 +
@@ -171,8 +171,8 @@
  
              if (!set.isEmpty()) {
 +                // CraftBukkit start - Send scaled max health
-+                if (this.entity instanceof EntityPlayer) {
-+                    ((EntityPlayer) this.entity).getBukkitEntity().injectScaledMaxHealth(set, false);
++                if (this.entity instanceof ServerPlayer) {
++                    ((ServerPlayer) this.entity).getBukkitEntity().injectScaledMaxHealth(set, false);
 +                }
 +                // CraftBukkit end
                  this.broadcastAndSend(new PacketPlayOutUpdateAttributes(this.entity.getId(), set));

@@ -87,7 +87,7 @@
 +    }
 +    // CraftBukkit end
 +
-     public CommandListenerWrapper createCommandSourceStack(@Nullable EntityPlayer entityplayer) {
+     public CommandListenerWrapper createCommandSourceStack(@Nullable ServerPlayer entityplayer) {
          String s = entityplayer == null ? "Sign" : entityplayer.getName().getString();
          Object object = entityplayer == null ? new ChatComponentText("Sign") : entityplayer.getDisplayName();
  

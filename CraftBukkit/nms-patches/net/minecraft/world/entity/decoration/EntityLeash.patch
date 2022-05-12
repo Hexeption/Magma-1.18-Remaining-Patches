@@ -6,7 +6,7 @@
  
 +// CraftBukkit start
 +import net.minecraft.network.protocol.game.PacketPlayOutAttachEntity;
-+import net.minecraft.server.level.EntityPlayer;
++import net.minecraft.server.level.ServerPlayer;
 +import org.bukkit.craftbukkit.event.CraftEventFactory;
 +// CraftBukkit end
 +
@@ -19,7 +19,7 @@
                  if (entityinsentient.getLeashHolder() == entityhuman) {
 +                    // CraftBukkit start
 +                    if (CraftEventFactory.callPlayerLeashEntityEvent(entityinsentient, this, entityhuman).isCancelled()) {
-+                        ((EntityPlayer) entityhuman).connection.send(new PacketPlayOutAttachEntity(entityinsentient, entityinsentient.getLeashHolder()));
++                        ((ServerPlayer) entityhuman).connection.send(new PacketPlayOutAttachEntity(entityinsentient, entityinsentient.getLeashHolder()));
 +                        continue;
 +                    }
 +                    // CraftBukkit end

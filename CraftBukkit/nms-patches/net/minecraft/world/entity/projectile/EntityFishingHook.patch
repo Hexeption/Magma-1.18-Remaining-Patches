@@ -86,7 +86,7 @@
 +                }
 +                // CraftBukkit end
                  this.pullEntity(this.hookedIn);
-                 CriterionTriggers.FISHING_ROD_HOOKED.trigger((EntityPlayer) entityhuman, itemstack, this, Collections.emptyList());
+                 CriterionTriggers.FISHING_ROD_HOOKED.trigger((ServerPlayer) entityhuman, itemstack, this, Collections.emptyList());
                  this.level.broadcastEntityEvent(this, (byte) 31);
 @@ -459,6 +492,15 @@
                  while (iterator.hasNext()) {

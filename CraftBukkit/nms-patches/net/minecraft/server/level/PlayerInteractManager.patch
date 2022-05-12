@@ -46,8 +46,8 @@
          this.gameModeForPlayer = enumgamemode;
          enumgamemode.updatePlayerAbilities(this.player.getAbilities());
          this.player.onUpdateAbilities();
--        this.player.server.getPlayerList().broadcastAll(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE, new EntityPlayer[]{this.player}));
-+        this.player.server.getPlayerList().broadcastAll(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE, new EntityPlayer[]{this.player}), this.player); // CraftBukkit
+-        this.player.server.getPlayerList().broadcastAll(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE, new ServerPlayer[]{this.player}));
++        this.player.server.getPlayerList().broadcastAll(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE, new ServerPlayer[]{this.player}), this.player); // CraftBukkit
          this.level.updateSleepingPlayerList();
      }
  
@@ -171,7 +171,7 @@
 +        org.bukkit.block.Block bblock = CraftBlock.at(level, blockposition);
 +        BlockBreakEvent event = null;
 +
-+        if (this.player instanceof EntityPlayer) {
++        if (this.player instanceof ServerPlayer) {
 +            // Sword + Creative mode pre-cancel
 +            boolean isSwordNoBreak = !this.player.getMainHandItem().getItem().canAttackBlock(iblockdata, this.level, blockposition, this.player);
 +
@@ -287,7 +287,7 @@
 +    public BlockPosition interactPosition;
 +    public EnumHand interactHand;
 +    public ItemStack interactItemStack;
-     public EnumInteractionResult useItemOn(EntityPlayer entityplayer, World world, ItemStack itemstack, EnumHand enumhand, MovingObjectPositionBlock movingobjectpositionblock) {
+     public EnumInteractionResult useItemOn(ServerPlayer entityplayer, World world, ItemStack itemstack, EnumHand enumhand, MovingObjectPositionBlock movingobjectpositionblock) {
          BlockPosition blockposition = movingobjectpositionblock.getBlockPos();
          IBlockData iblockdata = world.getBlockState(blockposition);
 +        EnumInteractionResult enuminteractionresult = EnumInteractionResult.PASS;

@@ -29,7 +29,7 @@
                  }
  
 +                // CraftBukkit start - Fire PlayerTeleportEvent
-+                if (entity1 instanceof EntityPlayer) {
++                if (entity1 instanceof ServerPlayer) {
 +                    org.bukkit.craftbukkit.entity.CraftPlayer player = (CraftPlayer) entity1.getBukkitEntity();
 +                    org.bukkit.Location location = new Location(world.getWorld(), (double) blockposition1.getX() + 0.5D, (double) blockposition1.getY() + 0.5D, (double) blockposition1.getZ() + 0.5D);
 +                    location.setPitch(player.getLocation().getPitch());
@@ -42,7 +42,7 @@
 +                    }
 +
 +                    entity1.setPortalCooldown();
-+                    ((EntityPlayer) entity1).connection.teleport(teleEvent.getTo());
++                    ((ServerPlayer) entity1).connection.teleport(teleEvent.getTo());
 +                    triggerCooldown(world, blockposition, iblockdata, tileentityendgateway); // CraftBukkit - call at end of method
 +                    return;
 +

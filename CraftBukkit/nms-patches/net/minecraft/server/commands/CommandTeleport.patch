@@ -17,11 +17,11 @@
                  }
  
                  if (worldserver == entity.level) {
--                    ((EntityPlayer) entity).connection.teleport(d0, d1, d2, f2, f3, set);
-+                    ((EntityPlayer) entity).connection.teleport(d0, d1, d2, f2, f3, set, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.COMMAND); // CraftBukkit
+-                    ((ServerPlayer) entity).connection.teleport(d0, d1, d2, f2, f3, set);
++                    ((ServerPlayer) entity).connection.teleport(d0, d1, d2, f2, f3, set, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.COMMAND); // CraftBukkit
                  } else {
--                    ((EntityPlayer) entity).teleportTo(worldserver, d0, d1, d2, f2, f3);
-+                    ((EntityPlayer) entity).teleportTo(worldserver, d0, d1, d2, f2, f3, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.COMMAND); // CraftBukkit
+-                    ((ServerPlayer) entity).teleportTo(worldserver, d0, d1, d2, f2, f3);
++                    ((ServerPlayer) entity).teleportTo(worldserver, d0, d1, d2, f2, f3, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.COMMAND); // CraftBukkit
                  }
  
                  entity.setYHeadRot(f2);

@@ -1,5 +1,5 @@
---- a/net/minecraft/server/level/EntityPlayer.java
-+++ b/net/minecraft/server/level/EntityPlayer.java
+--- a/net/minecraft/server/level/ServerPlayer.java
++++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -140,6 +140,33 @@
 @@ -194,6 +221,20 @@
 @@ -256,12 +297,56 @@
@@ -85,7 +85,7 @@
              if (nbttagcompound.contains("SpawnDimension")) {
 -                DataResult dataresult = World.RESOURCE_KEY_CODEC.parse(DynamicOpsNBT.INSTANCE, nbttagcompound.get("SpawnDimension"));
 +                DataResult<ResourceKey<World>> dataresult = World.RESOURCE_KEY_CODEC.parse(DynamicOpsNBT.INSTANCE, nbttagcompound.get("SpawnDimension")); // CraftBukkit - decompile error
-                 Logger logger = EntityPlayer.LOGGER;
+                 Logger logger = ServerPlayer.LOGGER;
  
                  Objects.requireNonNull(logger);
 @@ -356,7 +450,20 @@
@@ -116,7 +116,7 @@
              nbttagcompound.putFloat("SpawnAngle", this.respawnAngle);
 -            DataResult dataresult = MinecraftKey.CODEC.encodeStart(DynamicOpsNBT.INSTANCE, this.respawnDimension.location());
 +            DataResult<NBTBase> dataresult = MinecraftKey.CODEC.encodeStart(DynamicOpsNBT.INSTANCE, this.respawnDimension.location()); // CraftBukkit - decompile error
-             Logger logger = EntityPlayer.LOGGER;
+             Logger logger = ServerPlayer.LOGGER;
  
              Objects.requireNonNull(logger);
 @@ -382,9 +489,33 @@
@@ -478,8 +478,8 @@
 +            Optional<BlockUtil.Rectangle> optional1 = worldserver.getPortalForcer().createPortal(blockposition, enumdirection_enumaxis, this, createRadius); // CraftBukkit
  
              if (!optional1.isPresent()) {
--                EntityPlayer.LOGGER.error("Unable to create a portal, likely target out of worldborder");
-+                // EntityPlayer.LOGGER.error("Unable to create a portal, likely target out of worldborder"); // CraftBukkit
+-                ServerPlayer.LOGGER.error("Unable to create a portal, likely target out of worldborder");
++                // ServerPlayer.LOGGER.error("Unable to create a portal, likely target out of worldborder"); // CraftBukkit
              }
  
              return optional1;

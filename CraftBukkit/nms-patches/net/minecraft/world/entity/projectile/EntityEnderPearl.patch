@@ -15,7 +15,7 @@
  
      public EntityEnderPearl(EntityTypes<? extends EntityEnderPearl> entitytypes, World world) {
 @@ -53,21 +60,34 @@
-                 EntityPlayer entityplayer = (EntityPlayer) entity;
+                 ServerPlayer entityplayer = (ServerPlayer) entity;
  
                  if (entityplayer.connection.getConnection().isConnected() && entityplayer.level == this.level && !entityplayer.isSleeping()) {
 -                    if (this.random.nextFloat() < 0.05F && this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
